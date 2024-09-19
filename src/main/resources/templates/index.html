@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book List</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Book List</h1>
+
+<div>
+    <h2 id="formTitle">Create New Book</h2>
+    <form id="bookForm">
+        <input type="hidden" id="bookId">
+        <label for="title">Title:</label>
+        <input type="text" id="title" ><br><br>
+
+        <label for="author">Author:</label>
+        <input type="text" id="author" ><br><br>
+
+        <label for="publishedDate">Published Date:</label>
+        <input type="text" id="publishedDate" ><br><br>
+
+        <button type="submit" id="submitButton">Create Book</button>
+        <button type="button" id="cancelEditButton" style="display: none;" onclick="cancelEdit()">Cancel Edit</button>
+    </form>
+</div>
+
+<h2>All Books</h2>
+<table id="bookTable">
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Published Date</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Dynamic Content Will Be Loaded Here -->
+    </tbody>
+</table>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        loadBooks();
+    });
+
+    const apiEndpoint = '/api/books';
+
+    function loadBooks() {
+        fetch(apiEndpoint)
+            .then(response => response.json())
+            .then(data => {
+                const bookTable = document.getElementById('bookTable').getElementsByTagName('tbody')[0];
+                bookTable.innerHTML = ''; // Clear table content before adding
+                data.forEach(book => {
+                    const row = bookTable.insertRow();
+                    row.innerHTML = `
+                        <td>${book.title}</td>
+                        <td>${book.author}</td>
+                        <td>${book.publishedDate}</td>
+                        <td>
+                            <button onclick="editBook(${book.id})">Edit</button>
+                            <button onclick="deleteBook(${book.id})">Delete</button>
+                        </td>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error loading books:', error));
+    }
+
+    document.getElementById('bookForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const id = document.getElementById('bookId').value;
+        const title = document.getElementById('title').value;
+        const author = document.getElementById('author').value;
+        const publishedDate = document.getElementById('publishedDate').value;
+
+        const book = { title, author, publishedDate };
+
+        if (id) {
+            // Edit book
+            fetch(`${apiEndpoint}/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(book),
+            })
+                .then(() => {
+                    console.log('Book updated:', book);
+                    resetForm();
+                    loadBooks(); // Reload the book list
+                })
+                .catch(error => console.error('Error updating book:', error));
+        } else {
+            // Create new book
+            fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(book),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Book created:', data);
+                    loadBooks(); // Reload the book list
+                })
+                .catch(error => console.error('Error creating book:', error));
+        }
+    });
+
+    function deleteBook(id) {
+        fetch(`${apiEndpoint}/${id}`, {
+            method: 'DELETE'
+        })
+            .then(() => {
+                console.log('Book deleted');
+                loadBooks(); // Reload the book list
+            })
+            .catch(error => console.error('Error deleting book:', error));
+    }
+
+    function editBook(id) {
+        fetch(`${apiEndpoint}/${id}`)
+            .then(response => response.json())
+            .then(book => {
+                document.getElementById('bookId').value = book.id;
+                document.getElementById('title').value = book.title;
+                document.getElementById('author').value = book.author;
+                document.getElementById('publishedDate').value = book.publishedDate;
+
+                document.getElementById('formTitle').textContent = 'Edit Book';
+                document.getElementById('submitButton').textContent = 'Update Book';
+                document.getElementById('cancelEditButton').style.display = 'inline';
+            })
+            .catch(error => console.error('Error fetching book:', error));
+    }
+
+    function cancelEdit() {
+        resetForm();
+    }
+
+    function resetForm() {
+        document.getElementById('bookId').value = '';
+        document.getElementById('title').value = '';
+        document.getElementById('author').value = '';
+        document.getElementById('publishedDate').value = '';
+        document.getElementById('formTitle').textContent = 'Create New Book';
+        document.getElementById('submitButton').textContent = 'Create Book';
+        document.getElementById('cancelEditButton').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
