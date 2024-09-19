@@ -168,6 +168,26 @@
         document.getElementById('submitButton').textContent = 'Create Book';
         document.getElementById('cancelEditButton').style.display = 'none';
     }
+
+    (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+        'cwr',
+        '83e49bff-77f2-4258-962e-0a78aee311c2',
+        '1.0.0',
+        'ap-southeast-1',
+        'https://client.rum.us-east-1.amazonaws.com/1.18.0/cwr.js',
+        {
+            sessionSampleRate: 1,
+            identityPoolId: "ap-southeast-1:7f5b15e2-18d5-4387-b5cf-36d060d12f47",
+            endpoint: "https://dataplane.rum.ap-southeast-1.amazonaws.com",
+            telemetries: [
+                'errors',
+                'performance',
+                [ 'http', { addXRayTraceIdHeader: true, recordAllRequests:true } ]
+            ],
+            allowCookies: true,
+            enableXRay: true
+        }
+    );
 </script>
 
 </body>
