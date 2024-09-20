@@ -18,7 +18,7 @@ public class BookService {
     @Autowired
     private RestTemplate restTemplate;
 
-    private final String CRUD_API_URL = "http://54.255.190.232:8080/api/books"; // Replace with the actual IP of the CRUD app
+    private final String CRUD_API_URL = "http://13.229.129.5:8080/api/books"; // Replace with the actual IP of the CRUD app
 
     public List<Book> getAllBooks() {
         logger.info("Calling CRUD API to fetch all books");
