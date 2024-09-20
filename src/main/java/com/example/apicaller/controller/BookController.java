@@ -1,5 +1,6 @@
 package com.example.apicaller.controller;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.apicaller.model.Book;
 import com.example.apicaller.service.BookService;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
+@XRayEnabled
 public class BookController {
 
     private static final Logger logger = LoggerFactory.getLogger(BookController.class);
@@ -19,6 +21,7 @@ public class BookController {
     private BookService bookService;
 
     @GetMapping
+    @XRayEnabled
     public List<Book> getAllBooks() {
         logger.info("Received request to fetch all books");
         List<Book> books = bookService.getAllBooks();
@@ -27,6 +30,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
+    @XRayEnabled
     public Book getBookById(@PathVariable Long id) {
         logger.info("Received request to fetch book with ID: {}", id);
         Book book = bookService.getBookById(id);
@@ -39,6 +43,7 @@ public class BookController {
     }
 
     @PostMapping
+    @XRayEnabled
     public Book createBook(@RequestBody Book book) {
         logger.info("Received request to create a new book: {}", book.getTitle());
         Book createdBook = bookService.createBook(book);
@@ -47,6 +52,7 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
+    @XRayEnabled
     public void updateBook(@PathVariable Long id, @RequestBody Book book) {
         logger.info("Received request to update book with ID: {}", id);
         bookService.updateBook(id, book);
@@ -54,6 +60,7 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
+    @XRayEnabled
     public void deleteBook(@PathVariable Long id) {
         logger.info("Received request to delete book with ID: {}", id);
         bookService.deleteBook(id);
